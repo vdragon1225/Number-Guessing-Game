@@ -23,41 +23,53 @@ int main() {
     int lowestGuesses = INT_MAX; // Initialize with the maximum int value
     duration<double> shortestTime = duration<double>::max();
     
-    // Determine the difficulty
-    cout << "Enter difficulty level (easy, medium, hard): ";
-    cin >> difficulty;
+    
     
     // Main game loop
     do {
-        if (difficulty == "easy") { // Random number between 1 and 10
-            randomNumber = rand() % 10 + 1;
-            cout << endl; // Break line
-            cout << "Guess the number between 1 and 10!" << endl;
-            maxGuesses = 5;
-            cout << "You have " << maxGuesses << " guesses." << endl;
-        } else if (difficulty == "medium") { // Random number between 1 and 100
-            randomNumber = rand() % 100 + 1;
-            cout << endl; // Break line
-            cout << "Guess the number between 1 and 100!" << endl;
-           maxGuesses = 7;
-           cout << "You have " << maxGuesses << " guesses." << endl;
-        } else if (difficulty == "hard") { // Random number between 1 and 1000
-            randomNumber = rand() % 1000 + 1;
-            cout << endl; // Break line
-            cout << "Guess the number between 1 and 1000!" << endl;
-           maxGuesses = 10;
-           cout << "You have " << maxGuesses << " guesses." << endl;
-        } else { // Invalid level
-            cout << endl; // Break line
-            cout << "Invalid difficulty level!" << endl;
-            continue;
+        // Check if valid difficulty input
+        bool validDifficulty = false;
+
+        while(!validDifficulty) {
+            // Determine the difficulty
+            cout << "Enter difficulty level (easy, medium, hard): ";
+            cin >> difficulty;
+
+            if (difficulty == "easy") { // Random number between 1 and 10
+                validDifficulty = true;
+                randomNumber = rand() % 10 + 1;
+                cout << endl; // Break line
+                cout << "Guess the number between 1 and 10!" << endl;
+                maxGuesses = 5;
+                cout << "You have " << maxGuesses << " guesses." << endl;
+            } else if (difficulty == "medium") { // Random number between 1 and 100
+                validDifficulty = true;
+                randomNumber = rand() % 100 + 1;
+                cout << endl; // Break line
+                cout << "Guess the number between 1 and 100!" << endl;
+                maxGuesses = 7;
+                cout << "You have " << maxGuesses << " guesses." << endl;
+            } else if (difficulty == "hard") { // Random number between 1 and 1000
+                validDifficulty = true;
+                randomNumber = rand() % 1000 + 1;
+                cout << endl; // Break line
+                cout << "Guess the number between 1 and 1000!" << endl;
+                maxGuesses = 10;
+                cout << "You have " << maxGuesses << " guesses." << endl;
+            } else { // Invalid level
+                cout << endl; // Break line
+                cout << "Invalid difficulty level!" << endl;
+            }
         }
-        
+
+        // Proceed to guessing
         guessNumber(randomNumber, maxGuesses, lowestGuesses, shortestTime, score);
         
-        
+        // Ask user if they want to play again
         cout << "\nDo you want to play again? (y/n): ";
         cin >> playAgain;
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
     }
     while(playAgain == 'y' || playAgain == 'Y');
     
@@ -65,13 +77,17 @@ int main() {
     cout << endl; // break line
     cout << "Results:" << endl;
     cout << "Final Score: " << score << endl; // Output the final score
-    cout << "Shortest time: " << shortestTime.count() << " seconds." << endl;
+    if (shortestTime.count() == std::numeric_limits<double>::max()) {
+        cout << "No games won." << endl;
+    } else {
+        cout << "Shortest time: " << shortestTime.count() << " seconds." << endl;
+    }
     
     // Output game with lowest guesses
     if (lowestGuesses != INT_MAX) {
         cout << "Your best game took " << lowestGuesses << " guesses." << endl;
     } else {
-        cout << "No games played." << endl;
+        cout << "No games won." << endl;
     }
 
     return 0;
@@ -125,7 +141,11 @@ void guessNumber(int number, int maxGuesses, int& lowestGuesses, duration<double
         } else {
             cout << "\nTry again!" << endl;
         }
-        
+
+        int guessesLeft = maxGuesses - guessCount;
+        cout << "You have " << guessesLeft << " guesses left." << endl;
+        cout << endl; // Break line
+
         if (guessCount == maxGuesses) {
             cout << "You've run out of guesses. The number was " << number << "." << endl;
             break; // Exit loop if max number of guesses reached
